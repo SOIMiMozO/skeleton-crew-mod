@@ -36,6 +36,9 @@ namespace SkeletonCrew
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
+            Settings.UseFampyrAppearance = GUILayout.Toggle(
+                Settings.UseFampyrAppearance, "Experimental Fampyr appearance (new summons)");
+            GUILayout.Space(10);
             GUILayout.Label("Skeleton Names");
 
             GUILayout.BeginHorizontal();
