@@ -39,7 +39,7 @@ namespace SkeletonCrew
             GUILayout.Label("Skeleton Names");
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Skeleton 1:", GUILayout.Width(100));
+            GUILayout.Label("Spear skeleton:", GUILayout.Width(100));
             Settings.SkeletonName1 =
                 GUILayout.TextField(
                     Settings.SkeletonName1 ?? "",
@@ -47,7 +47,7 @@ namespace SkeletonCrew
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Skeleton 2:", GUILayout.Width(100));
+            GUILayout.Label("Saber skeleton:", GUILayout.Width(100));
             Settings.SkeletonName2 =
                 GUILayout.TextField(
                     Settings.SkeletonName2 ?? "",
@@ -55,7 +55,7 @@ namespace SkeletonCrew
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
-            GUILayout.Label("Skeleton 3:", GUILayout.Width(100));
+            GUILayout.Label("Morning star skeleton:", GUILayout.Width(100));
             Settings.SkeletonName3 =
                 GUILayout.TextField(
                     Settings.SkeletonName3 ?? "",
