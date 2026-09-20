@@ -1,4 +1,4 @@
-﻿using SkeletonCrew;
+using SkeletonCrew;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -11,18 +11,6 @@ namespace PoESummonMod
 
         private const string ArmorPrefabName =
             "skeleton_hide_armor";
-
-        private const string SpearPrefabName =
-            "spear";
-
-        private const string SabrePrefabName =
-            "sabre";
-
-        private const string DaggerPrefabName =
-            "dagger";
-
-        private const string MorningStarPrefabName =
-            "morning_star01";
 
         private static string GetSkeletonName(int index)
         {
@@ -74,12 +62,17 @@ namespace PoESummonMod
                 characterStats,
                 summoner);
 
+            SkeletonModels.Apply(characterStats, character, summonIndex);
+
+            CharacterStats summonerStats = summoner.GetComponent<CharacterStats>();
+            int bonusLevel = summonerStats == null ? 0 : SummonEquipmentQuality.GetBonusLevel(summonerStats);
+
             ApplySkeletonArmor(
-                characterStats);
+                characterStats, bonusLevel);
 
             ApplySkeletonWeapons(
                 characterStats,
-                summonIndex);
+                summonIndex, bonusLevel);
         }
 
         private static void ApplyCustomName(
@@ -134,7 +127,7 @@ namespace PoESummonMod
         }
 
         private static void ApplySkeletonArmor(
-            CharacterStats skeleton)
+            CharacterStats skeleton, int bonusLevel)
         {
             GameObject armorPrefab =
                 GameResources.LoadPrefab<GameObject>(
@@ -163,7 +156,7 @@ namespace PoESummonMod
 
             if (armor != null)
             {
-                armor.DamageThreshhold = 0;
+                armor.DamageThreshhold = SummonEquipmentQuality.GetArmorBonus(bonusLevel);
                 armor.DamageReduction = 0;
 
                 armor.DtPercBurning = 75;
@@ -210,7 +203,7 @@ namespace PoESummonMod
 
         private static void ApplySkeletonWeapons(
             CharacterStats skeleton,
-            int summonIndex)
+            int summonIndex, int bonusLevel)
         {
             Equipment equipment =
                 skeleton.GetComponent<Equipment>();
@@ -223,80 +216,32 @@ namespace PoESummonMod
                 return;
             }
 
-            switch (summonIndex)
+            if (summonIndex < 0 || summonIndex > 2)
             {
-                // Skeleton 1:
-                // Replace primary weapon with spear.
-                // Keep its default shield in the secondary hand.
-                case 0:
-                    Equippable spear =
-                        CreateEquippable(SpearPrefabName);
-
-                    if (spear != null)
-                    {
-                        equipment.DefaultEquippedItems.PrimaryWeapon =
-                            spear;
-
-                        Main.Logger.Log(
-                            "Skeleton 1 equipped with spear + default shield.");
-                    }
-
-                    break;
-
-                // Skeleton 2:
-                // Replace both hands with sabre and dagger.
-                case 1:
-                    Equippable primarySabre =
-                        CreateEquippable(SabrePrefabName);
-
-                    Equippable secondaryDagger =
-                        CreateEquippable(DaggerPrefabName);
-
-                    if (primarySabre != null &&
-                        secondaryDagger != null)
-                    {
-                        equipment.DefaultEquippedItems.PrimaryWeapon =
-                            primarySabre;
-
-                        equipment.DefaultEquippedItems.SecondaryWeapon =
-                            secondaryDagger;
-
-                        Main.Logger.Log(
-                            "Skeleton 2 equipped with sabre and dagger.");
-                    }
-
-                    break;
-
-                // Skeleton 3:
-                // Two-handed morning star.
-                case 2:
-                    Equippable morningStar =
-                        CreateEquippable(MorningStarPrefabName);
-
-                    if (morningStar != null)
-                    {
-                        equipment.DefaultEquippedItems.PrimaryWeapon =
-                            morningStar;
-
-                        // Remove the skeleton's default shield.
-                        equipment.DefaultEquippedItems.SecondaryWeapon =
-                            null;
-
-                        Main.Logger.Log(
-                            "Skeleton 3 equipped with morning_star_01.");
-                    }
-
-                    break;
-
-                default:
-                    Main.Logger.Error(
-                        "Unexpected skeleton summon index: " +
-                        summonIndex);
-
-                    break;
+                Main.Logger.Error("Unexpected skeleton summon index: " + summonIndex);
+                return;
             }
-        }
 
+            // Normalize here too: saved settings cannot bypass hand restrictions.
+            SkeletonHands hands = Main.Settings.GetHands(summonIndex);
+            WeaponOption main = WeaponCatalog.Find(hands.MainHand);
+            WeaponOption off = WeaponCatalog.Find(hands.OffHand);
+            string primaryPrefab = main.PrefabName;
+            string secondaryPrefab = off.PrefabName;
+            Equippable primary = primaryPrefab == null ? null : CreateEquippable(primaryPrefab);
+            Equippable secondary = secondaryPrefab == null ? null : CreateEquippable(secondaryPrefab);
+
+            SummonEquipmentQuality.Apply(primary, bonusLevel);
+            SummonEquipmentQuality.Apply(secondary, bonusLevel);
+
+            // Resolve each hand independently. A failed load leaves only that hand
+            // empty, rather than reverting both hands to the summon's axe/shield.
+            equipment.DefaultEquippedItems.PrimaryWeapon = primary;
+            equipment.DefaultEquippedItems.SecondaryWeapon = secondary;
+            Main.Logger.Log("Skeleton " + (summonIndex + 1) + " equipped with " +
+                (primary == null ? "Empty" : primaryPrefab) + " / " +
+                (secondary == null ? "Empty" : secondaryPrefab) + ".");
+        }
         private static Equippable CreateEquippable(
             string prefabName)
         {
