@@ -2,7 +2,7 @@
   "Id": "SkeletonCrew",
   "DisplayName": "Skeleton Crew",
   "Author": "PeshLesh",
-  "Version": "1.0.0",
+  "Version": "1.2.0",
   "ManagerVersion": "0.32.5.0",
   "AssemblyName": "SkeletonCrew.dll",
   "EntryMethod": "SkeletonCrew.Main.Load"
