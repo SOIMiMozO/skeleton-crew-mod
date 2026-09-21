@@ -7,15 +7,26 @@ namespace SkeletonCrew
         public readonly string PrefabName;
         public readonly bool TwoHanded;
         public readonly bool OffHandOnly;
+        public readonly string AppearancePrefabStem;
 
         public WeaponOption(string id, string label, string prefabName,
-            bool twoHanded = false, bool offHandOnly = false)
+            bool twoHanded = false, bool offHandOnly = false, string appearancePrefabStem = null)
         {
             Id = id;
             Label = label;
             PrefabName = prefabName;
             TwoHanded = twoHanded;
             OffHandOnly = offHandOnly;
+            AppearancePrefabStem = appearancePrefabStem ?? prefabName;
+        }
+
+        public string GetAppearancePrefab(int bonusLevel)
+        {
+            if (PrefabName == null || bonusLevel < 4)
+                return PrefabName;
+            // Generic visuals stop at Exceptional; enchantments continue
+            // independently through Superb and Legendary.
+            return AppearancePrefabStem + (bonusLevel >= 8 ? "_exceptional" : "_fine");
         }
     }
 
@@ -44,9 +55,11 @@ namespace SkeletonCrew
             // Standard two-handed melee weapons.
             new WeaponOption("estoc", "Estoc (two-handed)", "estoc", twoHanded: true),
             new WeaponOption("great_sword", "Great sword (two-handed)", "great_sword", twoHanded: true),
-            new WeaponOption("morning_star01", "Morning star (two-handed)", "morning_star01", twoHanded: true),
+            new WeaponOption("morning_star01", "Morning star (two-handed)", "morning_star01", twoHanded: true,
+                appearancePrefabStem: "morning_star"),
             new WeaponOption("pike", "Pike (two-handed)", "pike", twoHanded: true),
-            new WeaponOption("pollaxe01", "Pollaxe (two-handed)", "pollaxe01", twoHanded: true),
+            new WeaponOption("pollaxe01", "Pollaxe (two-handed)", "pollaxe01", twoHanded: true,
+                appearancePrefabStem: "pollaxe"),
             new WeaponOption("quarterstaff", "Quarterstaff (two-handed)", "quarterstaff", twoHanded: true),
 
             // In Pillars of Eternity 1, ranged weapons occupy both hands,

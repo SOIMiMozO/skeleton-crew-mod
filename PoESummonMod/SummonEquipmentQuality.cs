@@ -63,7 +63,7 @@ namespace SkeletonCrew
             if (modifier == null || !modifier.IsQualityMod)
             {
                 Main.Logger.Error("Could not load quality modifier " + prefabName +
-                    "; keeping base equipment.");
+                    "; keeping the item's existing quality.");
                 return;
             }
 

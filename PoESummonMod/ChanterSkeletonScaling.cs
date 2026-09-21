@@ -62,8 +62,6 @@ namespace PoESummonMod
                 characterStats,
                 summoner);
 
-            SkeletonModels.Apply(characterStats, character, summonIndex);
-
             CharacterStats summonerStats = summoner.GetComponent<CharacterStats>();
             int bonusLevel = summonerStats == null ? 0 : SummonEquipmentQuality.GetBonusLevel(summonerStats);
 
@@ -226,10 +224,8 @@ namespace PoESummonMod
             SkeletonHands hands = Main.Settings.GetHands(summonIndex);
             WeaponOption main = WeaponCatalog.Find(hands.MainHand);
             WeaponOption off = WeaponCatalog.Find(hands.OffHand);
-            string primaryPrefab = main.PrefabName;
-            string secondaryPrefab = off.PrefabName;
-            Equippable primary = primaryPrefab == null ? null : CreateEquippable(primaryPrefab);
-            Equippable secondary = secondaryPrefab == null ? null : CreateEquippable(secondaryPrefab);
+            Equippable primary = CreateSelectedEquippable(main, bonusLevel);
+            Equippable secondary = CreateSelectedEquippable(off, bonusLevel);
 
             SummonEquipmentQuality.Apply(primary, bonusLevel);
             SummonEquipmentQuality.Apply(secondary, bonusLevel);
@@ -239,8 +235,22 @@ namespace PoESummonMod
             equipment.DefaultEquippedItems.PrimaryWeapon = primary;
             equipment.DefaultEquippedItems.SecondaryWeapon = secondary;
             Main.Logger.Log("Skeleton " + (summonIndex + 1) + " equipped with " +
-                (primary == null ? "Empty" : primaryPrefab) + " / " +
-                (secondary == null ? "Empty" : secondaryPrefab) + ".");
+                (primary == null ? "Empty" : primary.name) + " / " +
+                (secondary == null ? "Empty" : secondary.name) + ".");
+        }
+
+        private static Equippable CreateSelectedEquippable(WeaponOption option, int bonusLevel)
+        {
+            if (option.PrefabName == null)
+                return null;
+            string appearancePrefab = option.GetAppearancePrefab(bonusLevel);
+            Equippable item = CreateEquippable(appearancePrefab);
+            if (item == null && appearancePrefab != option.PrefabName)
+            {
+                Main.Logger.Log("Falling back to base appearance for " + option.Label + ".");
+                item = CreateEquippable(option.PrefabName);
+            }
+            return item;
         }
         private static Equippable CreateEquippable(
             string prefabName)

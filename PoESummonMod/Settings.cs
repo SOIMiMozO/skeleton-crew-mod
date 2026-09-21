@@ -25,21 +25,6 @@ namespace SkeletonCrew
         public SkeletonHands SkeletonHands2;
         public SkeletonHands SkeletonHands3;
 
-        public string SkeletonModel1 = "human";
-        public string SkeletonModel2 = "orlan";
-        public string SkeletonModel3 = "aumaua";
-
-        public SkeletonModelOption GetModel(int index)
-        {
-            switch (index)
-            {
-                case 0: return SkeletonModelCatalog.Find(SkeletonModel1);
-                case 1: return SkeletonModelCatalog.Find(SkeletonModel2);
-                case 2: return SkeletonModelCatalog.Find(SkeletonModel3);
-                default: throw new System.ArgumentOutOfRangeException(nameof(index));
-            }
-        }
-
         public SkeletonHands GetHands(int index)
         {
             SkeletonHands hands;

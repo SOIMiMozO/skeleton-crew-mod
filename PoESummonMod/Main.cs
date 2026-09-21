@@ -37,7 +37,7 @@ namespace SkeletonCrew
 
         private static void OnGUI(UnityModManager.ModEntry modEntry)
         {
-            GUILayout.Label("Skeleton Names, Models and Weapons");
+            GUILayout.Label("Skeleton Names and Weapons");
 
             GUILayout.BeginHorizontal();
             GUILayout.Label("Skeleton 1:", GUILayout.Width(100));
@@ -46,7 +46,6 @@ namespace SkeletonCrew
                     Settings.SkeletonName1 ?? "",
                     GUILayout.Width(200));
             GUILayout.EndHorizontal();
-            Settings.SkeletonModel1 = DrawModelDropdown(0);
             DrawHands(0);
 
             GUILayout.BeginHorizontal();
@@ -56,7 +55,6 @@ namespace SkeletonCrew
                     Settings.SkeletonName2 ?? "",
                     GUILayout.Width(200));
             GUILayout.EndHorizontal();
-            Settings.SkeletonModel2 = DrawModelDropdown(1);
             DrawHands(1);
 
             GUILayout.BeginHorizontal();
@@ -66,46 +64,14 @@ namespace SkeletonCrew
                     Settings.SkeletonName3 ?? "",
                     GUILayout.Width(200));
             GUILayout.EndHorizontal();
-            Settings.SkeletonModel3 = DrawModelDropdown(2);
             DrawHands(2);
 
             GUILayout.Space(10);
 
             GUILayout.Label(
-                "Names, models and racial bonuses, and weapons are applied the next time skeletons are summoned.");
+                "Names and weapons are applied the next time skeletons are summoned.");
         }
 
-        private static string DrawModelDropdown(int skeletonIndex)
-        {
-            // Weapon dropdowns use IDs 0-5; model dropdowns use IDs 6-8.
-            int dropdownId = 6 + skeletonIndex;
-            SkeletonModelOption selected = Settings.GetModel(skeletonIndex);
-            GUILayout.BeginHorizontal();
-            GUILayout.Label("Model:", GUILayout.Width(100));
-            if (GUILayout.Button(selected.Label +
-                (openDropdown == dropdownId ? " [-]" : " [+]"), GUILayout.Width(250)))
-                openDropdown = openDropdown == dropdownId ? -1 : dropdownId;
-            GUILayout.EndHorizontal();
-
-            if (openDropdown == dropdownId)
-            {
-                GUILayout.BeginHorizontal();
-                GUILayout.Space(104);
-                GUILayout.BeginVertical(GUI.skin.box, GUILayout.Width(250));
-                foreach (SkeletonModelOption option in SkeletonModelCatalog.Options)
-                {
-                    if (GUILayout.Button(option.Label))
-                    {
-                        selected = option;
-                        openDropdown = -1;
-                    }
-                }
-                GUILayout.EndVertical();
-                GUILayout.EndHorizontal();
-            }
-            GUILayout.Label(selected.BonusDescription);
-            return selected.Id;
-        }
         private static void DrawHands(int skeletonIndex)
         {
             SkeletonHands hands = Settings.GetHands(skeletonIndex);
