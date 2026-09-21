@@ -75,7 +75,10 @@ namespace SkeletonCrew
             new WeaponOption("wand", "Wand (ranged)", "wand", twoHanded: true),
             new WeaponOption("war_bow", "War bow (ranged)", "war_bow", twoHanded: true),
 
-            new WeaponOption("shield", "Shield", "shield_small", offHandOnly: true)
+            // Keep the original ID so saved shield selections remain small shields.
+            new WeaponOption("shield", "Small shield", "shield_small", offHandOnly: true),
+            new WeaponOption("shield_medium", "Medium shield", "shield_medium_heater", offHandOnly: true),
+            new WeaponOption("shield_large", "Large shield", "shield_large", offHandOnly: true)
         };
 
         public static WeaponOption Find(string id)
