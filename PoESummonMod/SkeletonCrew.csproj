@@ -73,6 +73,7 @@
     <Compile Include="WeaponCatalog.cs" />
     <Compile Include="SummonEquipmentQuality.cs" />
     <Compile Include="SummonCreaturePatch.cs" />
+    <Compile Include="RhymersSummonTurnBasedPatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.json">
