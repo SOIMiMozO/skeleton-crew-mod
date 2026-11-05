@@ -34,7 +34,7 @@ namespace PoESummonMod
             CharacterStats characterStats,
             CharacterStats character,
             GameObject summoner,
-            int summonIndex)
+            int summonIndex, Summon source)
         {
             if (characterStats == null ||
                 character == null ||
@@ -43,9 +43,10 @@ namespace PoESummonMod
                 return;
             }
 
-            // Only modify the Chanter skeleton summon.
+            // Route other supported summons through the optional scaling feature.
             if (character.gameObject.name != SkeletonPrefabName)
             {
+                ChanterSummonScaling.Apply(characterStats, character, summoner, source);
                 return;
             }
 
@@ -127,24 +128,9 @@ namespace PoESummonMod
         private static void ApplySkeletonArmor(
             CharacterStats skeleton, int bonusLevel)
         {
-            GameObject armorPrefab =
-                GameResources.LoadPrefab<GameObject>(
-                    ArmorPrefabName,
-                    false);
-
-            if (armorPrefab == null)
-            {
-                Main.Logger.Error(
-                    "Could not load " +
-                    ArmorPrefabName +
-                    ".");
-
-                return;
-            }
-
-            GameObject armorObject =
-                Object.Instantiate<GameObject>(
-                    armorPrefab);
+            Equippable armorItem = CreateEquippable(ArmorPrefabName, skeleton.transform);
+            if (armorItem == null) return;
+            GameObject armorObject = armorItem.gameObject;
 
             armorObject.name =
                 "Skeleton_Hide_Chanter_Armor";
@@ -224,8 +210,8 @@ namespace PoESummonMod
             SkeletonHands hands = Main.Settings.GetHands(summonIndex);
             WeaponOption main = WeaponCatalog.Find(hands.MainHand);
             WeaponOption off = WeaponCatalog.Find(hands.OffHand);
-            Equippable primary = CreateSelectedEquippable(main, bonusLevel);
-            Equippable secondary = CreateSelectedEquippable(off, bonusLevel);
+            Equippable primary = CreateSelectedEquippable(main, bonusLevel, skeleton.transform);
+            Equippable secondary = CreateSelectedEquippable(off, bonusLevel, skeleton.transform);
 
             SummonEquipmentQuality.Apply(primary, bonusLevel);
             SummonEquipmentQuality.Apply(secondary, bonusLevel);
@@ -239,21 +225,21 @@ namespace PoESummonMod
                 (secondary == null ? "Empty" : secondary.name) + ".");
         }
 
-        private static Equippable CreateSelectedEquippable(WeaponOption option, int bonusLevel)
+        private static Equippable CreateSelectedEquippable(WeaponOption option, int bonusLevel, Transform owner)
         {
             if (option.PrefabName == null)
                 return null;
             string appearancePrefab = option.GetAppearancePrefab(bonusLevel);
-            Equippable item = CreateEquippable(appearancePrefab);
+            Equippable item = CreateEquippable(appearancePrefab, owner);
             if (item == null && appearancePrefab != option.PrefabName)
             {
                 Main.Logger.Log("Falling back to base appearance for " + option.Label + ".");
-                item = CreateEquippable(option.PrefabName);
+                item = CreateEquippable(option.PrefabName, owner);
             }
             return item;
         }
         private static Equippable CreateEquippable(
-            string prefabName)
+            string prefabName, Transform owner)
         {
             GameObject prefab =
                 GameResources.LoadPrefab<GameObject>(
@@ -263,9 +249,16 @@ namespace PoESummonMod
             if (prefab == null)
             {
                 Main.Logger.Error(
-                    "Could not load weapon prefab: " +
+                    "Could not load equipment prefab: " +
                     prefabName);
 
+                return null;
+            }
+
+            Equippable original = prefab.GetComponent<Equippable>();
+            if (original == null || owner == null)
+            {
+                Main.Logger.Error("Cannot create equipment without an Equippable prefab and owner: " + prefabName);
                 return null;
             }
 
@@ -273,13 +266,18 @@ namespace PoESummonMod
                 Object.Instantiate<GameObject>(
                     prefab);
 
+            // These are live item instances, not new prefabs. Parent immediately
+            // so Item.Start never sees a loose world item and owner destruction
+            // cleans up the instance even if equipment initialization fails.
+            weaponObject.transform.SetParent(owner, false);
+
             Equippable equippable =
                 weaponObject.GetComponent<Equippable>();
 
             if (equippable == null)
             {
                 Main.Logger.Error(
-                    "Weapon prefab has no Equippable component: " +
+                    "Equipment clone has no Equippable component: " +
                     prefabName);
 
                 Object.Destroy(weaponObject);
@@ -287,6 +285,12 @@ namespace PoESummonMod
                 return null;
             }
 
+            // EquipmentSet.InstantiateFromSet now reuses this customized object
+            // instead of loading by its name and creating a second instance.
+            equippable.Prefab = original;
+            RechargeDiagnostics.Write("EQUIPMENT INSTANCE item=" + RechargeDiagnostics.Id(equippable) +
+                " prefab=" + RechargeDiagnostics.Id(original) + " owner=" + RechargeDiagnostics.Id(owner) +
+                " isPrefab=" + equippable.IsPrefab);
             return equippable;
         }
     }

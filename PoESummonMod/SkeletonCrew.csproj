@@ -67,13 +67,23 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ChanterSkeletonScaling.cs" />
+    <Compile Include="ChanterSummonScaling.cs" />
+    <Compile Include="ChanterSummonOrigin.cs" />
+    <Compile Include="ChanterSummonOriginPatch.cs" />
+    <Compile Include="ChanterSummonEquipment.cs" />
+    <Compile Include="ChanterWurmBurn.cs" />
+    <Compile Include="ChanterWurmBurnPresentation.cs" />
     <Compile Include="Main.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="WeaponCatalog.cs" />
     <Compile Include="SummonEquipmentQuality.cs" />
     <Compile Include="SummonCreaturePatch.cs" />
+    <Compile Include="SummonTrace.cs" />
     <Compile Include="RhymersSummonTurnBasedPatch.cs" />
+    <Compile Include="RhymersSummonRecharge.cs" />
+    <Compile Include="RechargeDiagnostics.cs" />
+    <Compile Include="HDTextureUpgradePatch.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.json">

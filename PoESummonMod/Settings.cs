@@ -13,6 +13,9 @@ namespace SkeletonCrew
 
     public class Settings : UnityModManager.ModSettings
     {
+        public bool EnableRhymersRecharge = false;
+        public bool EnableChanterSummonScaling = false;
+
         public string SkeletonName1 = "Human Skeleton Uno";
         public string SkeletonName2 = "Human Skeleton Dos";
         public string SkeletonName3 = "Human Skeleton Tres";

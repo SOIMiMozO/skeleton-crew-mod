@@ -1,4 +1,4 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using SkeletonCrew;
 using System;
 using System.Collections.Generic;
@@ -136,11 +136,14 @@ namespace PoESummonMod
                             OpCodes.Callvirt,
                             countGetter);
 
+                        // Pass the originating Summon instance for invocation scoping.
+                        yield return new CodeInstruction(OpCodes.Ldarg_0);
+
                         // Apply(
                         //     characterStats,
                         //     character,
                         //     m_summoner,
-                        //     m_summons.Count);
+                        //     m_summons.Count, this);
                         yield return new CodeInstruction(
                             OpCodes.Call,
                             applyMethod);

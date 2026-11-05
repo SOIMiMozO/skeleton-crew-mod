@@ -8,11 +8,13 @@ namespace SkeletonCrew
     {
         private static bool warned;
 
-        public static int GetBonusLevel(CharacterStats summoner)
+        public static int GetBonusLevel(CharacterStats summoner, bool requireChanter = false)
         {
+            int fallback = !requireChanter || summoner.CharacterClass == CharacterStats.Class.Chanter
+                ? summoner.Level : 0;
             var mod = UnityModManager.FindMod("Multiclass");
             if (mod == null || !mod.Active)
-                return summoner.Level;
+                return fallback;
 
             try
             {
@@ -28,10 +30,10 @@ namespace SkeletonCrew
             {
                 if (!warned)
                 {
-                    Main.Logger.Error("Could not read Multiclass chanter level; using total level. " + ex.Message);
+                    Main.Logger.Error("Could not read Multiclass chanter level; strict Chanter summon scaling is skipped, legacy equipment uses its fallback. " + ex.Message);
                     warned = true;
                 }
-                return summoner.Level;
+                return requireChanter ? 0 : fallback;
             }
         }
 
