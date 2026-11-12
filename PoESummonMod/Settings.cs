@@ -15,6 +15,8 @@ namespace SkeletonCrew
     {
         public bool EnableRhymersRecharge = false;
         public bool EnableChanterSummonScaling = false;
+        public bool EnableSummonCoexistence = true;
+        public bool EnableUnlimitedSummonDuration = true;
 
         public string SkeletonName1 = "Human Skeleton Uno";
         public string SkeletonName2 = "Human Skeleton Dos";

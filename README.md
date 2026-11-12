@@ -1,5 +1,36 @@
 # Skeleton Crew
 
+## Coexisting, persistent Rhymer's and item summons (1.4.0)
+
+Vanilla `Summon.DestroyAllSummoned` removes every summoned creature a character
+has, no matter which source created it. Re-using any summon, any summon's timer
+running out, or combat ending for one source also dismissed Rhymer's skeletons and
+item summons (figurines). Now Rhymer's Summon and item sources remove only their
+own creatures, and other sources no longer remove them, so all of them can be out
+at once. Re-using the same source still replaces its own summons, and two ordinary
+spell summons keep the vanilla rule that one replaces the other.
+
+Rhymer's and item summons also no longer have a duration. They stay until combat
+ends, they die, the summoner dies, the source is re-used, or the item is unequipped.
+The ability tooltip shows "until combat ends" instead of a duration. Both behaviours
+are on by default, and each has its own toggle in the mod menu.
+
+Figurines carry a "summon count must not exceed N" activation requirement that
+counted every summon the character had, so they could not even be used while
+Rhymer's skeletons were out. That count now ignores other sources' creatures.
+
+The game reserves three party summon slots per character. With several sources
+out at once, a fourth summon got no slot (-1), and turn-based combat froze when its
+turn started. Such a summon now borrows any free summon slot (another party
+member's unused ones, or those of empty party positions). If every slot is taken,
+the extra summon is dismissed right away instead of freezing the game.
+
+The diagnostic log adds `PERSIST UNLIMITED` (timer cleared at spawn),
+`PERSIST KEEP` (another source's creatures were kept during a removal),
+`PERSIST PREREQ` (the summon-count requirement was re-evaluated),
+`PERSIST SLOT` (a free summon slot was borrowed) and `PERSIST NOSLOT`
+(a summon was dismissed because no slot was free).
+
 ## Summon lifetime tracing (1.3.6)
 
 The diagnostic log now traces every creature created by `Summon.SummonCreature`

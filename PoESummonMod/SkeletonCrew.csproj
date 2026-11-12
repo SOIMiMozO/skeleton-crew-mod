@@ -80,6 +80,7 @@
     <Compile Include="SummonEquipmentQuality.cs" />
     <Compile Include="SummonCreaturePatch.cs" />
     <Compile Include="SummonTrace.cs" />
+    <Compile Include="PersistentSummons.cs" />
     <Compile Include="RhymersSummonTurnBasedPatch.cs" />
     <Compile Include="RhymersSummonRecharge.cs" />
     <Compile Include="RechargeDiagnostics.cs" />

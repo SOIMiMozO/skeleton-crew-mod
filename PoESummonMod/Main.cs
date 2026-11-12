@@ -53,7 +53,27 @@ namespace SkeletonCrew
             DrawDescription("Wurms: burn for 100% of hit damage over 6 base seconds, with normal graze/crit and mitigation rules.");
             DrawDescription("Wisp claws: 5 DR bypass, +5 per upgrade. Item summons are excluded.");
             GUILayout.Space(14);
-            bool recharge = GUILayout.Toggle(Settings.EnableRhymersRecharge,
+            bool coexist = GUILayout.Toggle(Settings.EnableSummonCoexistence,
+                "Keep Rhymer's and item summons alongside other summons");
+            if (coexist != Settings.EnableSummonCoexistence)
+            {
+                Settings.EnableSummonCoexistence = coexist;
+                RechargeDiagnostics.Write("SETTING summonCoexistence=" + coexist);
+            }
+            GUILayout.Space(4);
+            DrawDescription("Rhymer's skeletons and item summons (e.g. figurines) are no longer dismissed when another source summons, expires or is re-used. Re-using the same source still replaces its own summons.");
+            GUILayout.Space(6);
+            bool unlimited = GUILayout.Toggle(Settings.EnableUnlimitedSummonDuration,
+                "Rhymer's and item summons last until combat ends");
+            if (unlimited != Settings.EnableUnlimitedSummonDuration)
+            {
+                Settings.EnableUnlimitedSummonDuration = unlimited;
+                RechargeDiagnostics.Write("SETTING unlimitedSummonDuration=" + unlimited);
+            }
+            GUILayout.Space(4);
+            DrawDescription("No duration timer: they stay until combat ends, they die, or the summoner dies. Applies to new summons.");
+            GUILayout.Space(14);
+            bool recharge =GUILayout.Toggle(Settings.EnableRhymersRecharge,
                 "Recharge Rhymer's Summon through damage and kills");
             if (recharge != Settings.EnableRhymersRecharge)
             {
